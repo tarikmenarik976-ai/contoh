@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Sistem Inspeksi</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+body { font-family: Arial; margin:0; background:#f4f6f9; }
+.container { padding:20px; background-color: red; width: 90%; max-width: 180PX ;}
+.hidden { display:none; }
+.nav { background:#2c3e50; padding:10px; color:white; }
+.nav button { margin-right:10px; padding:8px 12px; border:none; cursor:pointer; margin: 40px auto;  }
+table { width:100%; border-collapse:collapse; margin-top:20px; }
+th, td { border:1px solid #000; padding:8px; text-align:center; }
+th { background:#34495e; color:white; }
+td { height:30px; }
+button { padding:8px 12px; margin:5px; cursor:pointer; }
+.print-area { background:white; padding:20px; }
+</style>
+</head>
+<body>
+
+<div id="login" class="container">
+<h2>Login</h2>
+<input id="user" placeholder="ID"><br><br>
+<input id="pass" type="password" placeholder="Password"><br><br>
+<button onclick="login()">Login</button>
+</div>
+
+<div id="menu" class="hidden">
+<div class="nav">
+<button onclick="openForm(1)">Dokumen 1</button>
+<button onclick="openForm(2)">Dokumen 2</button>
+<button onclick="openForm(3)">Dokumen 3</button>
+<button onclick="openStorage()">Penyimpanan</button>
+<button onclick="logout()">Logout</button>
+</div>
+</div>
+
+<div id="formPage" class="container hidden">
+<h3>Isi Identitas</h3>
+<input id="hari" placeholder="Hari"><br><br>
+<input id="tanggal" type="date"><br><br>
+<input id="jam" type="time"><br><br>
+<input id="cuaca" placeholder="Cuaca"><br><br>
+<button onclick="goTable()">Lanjut</button>
+<button onclick="backMenu()">Back</button>
+</div>
+
+<div id="tablePage" class="container hidden"></div>
+
+<div id="storagePage" class="container hidden">
+<h3>Data Tersimpan</h3>
+<div id="dataList"></div>
+<button onclick="backMenu()">Back</button>
+</div>
+
+<script>
+let currentDoc = 0;
+let identity = {};
+let savedData = [];
+
+function login(){
+ if(user.value==='user123' && pass.value==='user123'){
+  loginDiv(false);
+ } else alert('Login gagal');
+}
+
+function loginDiv(){
+ document.getElementById('login').classList.toggle('hidden');
+ document.getElementById('menu').classList.toggle('hidden');
+}
+
+function logout(){ location.reload(); }
+
+function openForm(doc){
+ currentDoc = doc;
+ hideAll();
+ document.getElementById('formPage').classList.remove('hidden');
+}
+
+function backMenu(){ hideAll(); document.getElementById('menu').classList.remove('hidden'); }
+
+function hideAll(){
+ document.getElementById('formPage').classList.add('hidden');
+ document.getElementById('tablePage').classList.add('hidden');
+ document.getElementById('storagePage').classList.add('hidden');
+}
+
+function goTable(){
+ identity = {
+  hari: hari.value,
+  tanggal: tanggal.value,
+  jam: jam.value,
+  cuaca: cuaca.value
+ };
+ renderTable();
+}
+
+function renderTable(){
+ hideAll();
+
+ let html = `<div class="print-area" id="printArea">
+ <h3>Dokumen ${currentDoc}</h3>
+ <p><b>Hari:</b> ${identity.hari} | 
+ <b>Tanggal:</b> ${identity.tanggal} | 
+ <b>Jam:</b> ${identity.jam} | 
+ <b>Cuaca:</b> ${identity.cuaca}</p>`;
+
+ // DOKUMEN 1
+ if(currentDoc==1){
+  html += `
+  <table>
+    <tr>
+      <th>Objek</th>
+      <th>Baik</th>
+      <th>Sedang</th>
+      <th>Kurang</th>
+    </tr>
+    <tr>
+      <td>Runway</td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+    </tr>
+    <tr>
+      <td>Apron</td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+    </tr>
+  </table>`;
+ }
+
+ // DOKUMEN 2
+ if(currentDoc==2){
+  html += `
+  <table>
+    <tr>
+      <th>Objek</th>
+      <th>Baik</th>
+      <th>Kurang</th>
+      <th>Rusak</th>
+    </tr>
+    <tr>
+      <td>Tembok</td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+    </tr>
+    <tr>
+      <td>Pintu</td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+    </tr>
+  </table>`;
+ }
+
+ // DOKUMEN 3
+ if(currentDoc==3){
+  html += `
+  <table>
+    <tr>
+      <th>Objek</th>
+      <th>Bersih</th>
+      <th>Kotor</th>
+      <th>Baik</th>
+      <th>Kurang</th>
+      <th>Rusak</th>
+    </tr>
+    <tr>
+      <td>WC Duduk</td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+    </tr>
+    <tr>
+      <td>Keran</td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+    </tr>
+    <tr>
+      <td>Wastafel</td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+      <td onclick="toggle(this)"></td>
+    </tr>
+  </table>`;
+ }
+
+ html += `</div>
+ <button onclick="saveData()">Simpan</button>
+ <button onclick="backMenu()">Back</button>`;
+
+ document.getElementById('tablePage').innerHTML = html;
+ document.getElementById('tablePage').classList.remove('hidden');
+}
+
+function createTable(rows, cols){
+ let html = '<table><tr><th>Objek</th>';
+ cols.forEach(c=> html += `<th>${c}</th>`);
+ html += '</tr>';
+
+ rows.forEach(r=>{
+  html += `<tr><td>${r}</td>`;
+  cols.forEach(()=>{
+   html += `<td onclick="toggle(this)"></td>`;
+  });
+  html += '</tr>';
+ });
+ html += '</table>';
+ return html;
+}
+
+function toggle(cell){
+ cell.innerHTML = cell.innerHTML === '✔' ? '' : '✔';
+}
+
+function saveData(){
+ let content = document.getElementById('printArea').outerHTML;
+ savedData.push(content);
+ alert('Data tersimpan');
+}
+
+function openStorage(){
+ hideAll();
+ let html='';
+ savedData.forEach((d,i)=>{
+  html += `<div style="border:1px solid #ccc; padding:10px; margin:10px;">
+  ${d}
+  <button onclick="downloadPDF(${i})">Download PDF</button>
+  </div>`;
+ });
+ document.getElementById('dataList').innerHTML = html;
+ document.getElementById('storagePage').classList.remove('hidden');
+}
+
+function downloadPDF(i){
+ let element = document.createElement('div');
+ element.innerHTML = savedData[i];
+
+ let opt = {
+  margin:       0.5,
+  filename:     'dokumen_inspeksi.pdf',
+  image:        { type: 'jpeg', quality: 1 },
+  html2canvas:  { scale: 2 },
+  jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+ };
+
+ html2pdf().set(opt).from(element).save();
+}
+</script>
+
+</body>
+</html>
